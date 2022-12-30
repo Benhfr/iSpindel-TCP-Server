@@ -85,6 +85,8 @@ import time
 import configparser
 import os
 import sys
+import gspread
+from gspread_formatting import *
 
 # CONFIG Start
 # Config is now completely being stored inside the database.
@@ -124,7 +126,7 @@ print("\tSQL_TABLE : "+SQL_TABLE)
 print("\tSQL_USER : "+SQL_USER)
 print("\tSQL_PASSWORD : ****")#+SQL_PASSWORD)
 print("\tSQL_PORT : "+str(SQL_PORT))
-
+print("")
 # Check and wait until database is available
 check = False
 while check == False:
@@ -453,6 +455,9 @@ def handler(clientsock, addr):
     if success:
         # We have the complete spindle data now, so let's make it available
 
+        #GSHEET
+        GSHEET = int(get_config_from_sql('GSHEET', 'ENABLE_GSHEET', spindle_name))  # Set to 1 if you want CSV (text file) output
+
         # CSV
         CSV = int(get_config_from_sql('CSV', 'ENABLE_CSV', spindle_name))  # Set to 1 if you want CSV (text file) output
         OUTPATH = get_config_from_sql('CSV', 'OUTPATH', 'GLOBAL')  # CSV output file path; filename will be name_id.csv
@@ -528,6 +533,46 @@ def handler(clientsock, addr):
         GRAINCONNECT_LASTSENT = str(get_config_from_sql('GRAINCONNECT', 'GRAINCONNECT_LASTSENT', spindle_name))
         GRAINCONNECT_INTERVAL = int(get_config_from_sql('GRAINCONNECT', 'GRAINCONNECT_INTERVAL', spindle_name))
 
+        if GSHEET:
+            dbgprint(repr(addr) + ' - writing GSHEET')
+
+            # retrieve Gsheet properties
+            GSHEET_JSON_KEY_LOCATION = config.get('GSHEET', 'GSHEET_JSON_KEY_LOCATION')
+            GSPREADSHEET_NAME = config.get('GSHEET', 'GSPREADSHEET_NAME')
+
+            ISPINDEL_VERT_NAME = config.get('GSHEET', 'ISPINDEL_VERT_NAME')
+            ISPINDEL_BLEU_NAME = config.get('GSHEET', 'ISPINDEL_BLEU_NAME')
+
+            RECIPE_NAME=''
+            if spindle_name == ISPINDEL_VERT_NAME:
+                RECIPE_NAME = config.get('GSHEET', 'RECIPE_VERT')
+            elif spindle_name == ISPINDEL_BLEU_NAME:
+                RECIPE_NAME = config.get('GSHEET', 'RECIPE_BLEU')
+
+            sa = gspread.service_account(filename=GSHEET_JSON_KEY_LOCATION)
+            sh = sa.open(GSPREADSHEET_NAME)
+
+            try:
+                wks = sh.worksheet(RECIPE_NAME + "_FERMENTATION")
+            except gspread.exceptions.WorksheetNotFound:
+                wks = sh.add_worksheet(RECIPE_NAME + "_FERMENTATION", 1500, 5)
+                wks.update('A1:E1', [['TIME', 'DENSITE', 'TEMPERATURE (°C)', 'BATTERIE (Volt)', 'ISPINDEL']])
+                fmt = cellFormat(
+                    backgroundColor=color(34.218, 112.86, 246.96),
+                    textFormat=textFormat(bold=True, foregroundColor=color(1, 1, 1)),
+                    horizontalAlignment='CENTER',
+                    verticalAlignment='MIDDLE'
+                )
+                format_cell_range(wks, 'A1:E1', fmt)
+                set_frozen(wks, rows=1)
+
+
+            if DATETIME == 1:
+                cdt = datetime.now()
+
+            wks.append_row([cdt.strftime('%d/%m/%Y %H:%M:%S'), float(gravity), float(temperature), float(battery), str(spindle_name)])
+            dbgprint(repr(addr) + ' - writing in '+GSPREADSHEET_NAME+' > '+RECIPE_NAME+' done')
+
         if CSV:
             dbgprint(repr(addr) + ' - writing CSV')
             recipe = 'n/a'
@@ -558,7 +603,7 @@ def handler(clientsock, addr):
                     outstr = ''
                     if DATETIME == 1:
                         cdt = datetime.now()
-                        outstr += cdt.strftime('%x %X') + DELIMITER
+                        outstr += cdt.strftime('%d/%m/%Y %H:%M:%S') + DELIMITER
                     outstr += str(spindle_name) + DELIMITER
                     outstr += str(spindle_id) + DELIMITER
                     outstr += str(angle) + DELIMITER
@@ -1024,7 +1069,7 @@ def main():
         clientsock, addr = serversock.accept()
         dbgprint('...connected from: ' + str(addr))
         _thread.start_new_thread(handler, (clientsock, addr))
-        _thread.start_new_thread(sendmail, ())
+       # _thread.start_new_thread(sendmail, ())
 
 if __name__ == "__main__":
     main()
