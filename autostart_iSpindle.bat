@@ -1,0 +1,1 @@
+start python "C:\Users\Benjamin\Desktop\python\Repos\iSpindel-TCP-Server\iSpindle.py"
