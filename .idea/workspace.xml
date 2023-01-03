@@ -26,7 +26,7 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
 }</component>
-  <component name="RunManager" selected="Python.test_connection_gsheet">
+  <component name="RunManager" selected="Python.iSpindle">
     <configuration name="iSpindle" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="iSpindel-TCP-Server" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -71,8 +71,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.test_connection_gsheet" />
         <item itemvalue="Python.iSpindle" />
+        <item itemvalue="Python.test_connection_gsheet" />
       </list>
     </recent_temporary>
   </component>

@@ -539,9 +539,9 @@ def handler(clientsock, addr):
             # retrieve Gsheet properties
             GSHEET_JSON_KEY_LOCATION = config.get('GSHEET', 'GSHEET_JSON_KEY_LOCATION')
             GSPREADSHEET_NAME = config.get('GSHEET', 'GSPREADSHEET_NAME')
-
             ISPINDEL_VERT_NAME = config.get('GSHEET', 'ISPINDEL_VERT_NAME')
             ISPINDEL_BLEU_NAME = config.get('GSHEET', 'ISPINDEL_BLEU_NAME')
+            METRICS_SUFFIX = " "+config.get('GSHEET', 'METRICS_SUFFIX')
 
             RECIPE_NAME=''
             if spindle_name == ISPINDEL_VERT_NAME:
@@ -553,9 +553,10 @@ def handler(clientsock, addr):
             sh = sa.open(GSPREADSHEET_NAME)
 
             try:
-                wks = sh.worksheet(RECIPE_NAME + "_FERMENTATION")
+                wks = sh.worksheet(RECIPE_NAME + METRICS_SUFFIX)
             except gspread.exceptions.WorksheetNotFound:
-                wks = sh.add_worksheet(RECIPE_NAME + "_FERMENTATION", 1500, 5)
+                dbgprint(repr(addr) + ' - create ' + GSPREADSHEET_NAME + ' > ' + METRICS_SUFFIX + ' done')
+                wks = sh.add_worksheet(RECIPE_NAME + METRICS_SUFFIX, 1500, 5)
                 wks.update('A1:E1', [['TIME', 'DENSITE', 'TEMPERATURE (°C)', 'BATTERIE (Volt)', 'ISPINDEL']])
                 fmt = cellFormat(
                     backgroundColor=color(34.218, 112.86, 246.96),
@@ -564,13 +565,16 @@ def handler(clientsock, addr):
                     verticalAlignment='MIDDLE'
                 )
                 format_cell_range(wks, 'A1:E1', fmt)
-                set_frozen(wks, rows=1)
 
+                set_frozen(wks, rows=1)
 
             if DATETIME == 1:
                 cdt = datetime.now()
 
-            wks.append_row([cdt.strftime('%d/%m/%Y %H:%M:%S'), float(gravity), float(temperature), float(battery), str(spindle_name)])
+            density = 1 + (gravity / (538.6 - 0.88 * gravity))
+            wks.append_row([cdt.strftime('%d/%m/%Y %H:%M:%S'), float(density), float(temperature), float(battery), str(spindle_name)],value_input_option='USER_ENTERED')
+            #format to date the first column
+
             dbgprint(repr(addr) + ' - writing in '+GSPREADSHEET_NAME+' > '+RECIPE_NAME+' done')
 
         if CSV:
