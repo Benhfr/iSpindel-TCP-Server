@@ -93,8 +93,8 @@ from gspread_formatting import *
 # So there shouldn't be anything here for you to adjust anymore.
 
 config = configparser.ConfigParser()
-config_path = './config/'
-config_path = config_path.replace('\\','/')
+#config_path = './config/'
+config_path = 'C:/Users/Benjamin/Desktop/python/Repos/iSpindel-TCP-Server/config/'
 
 try:
   with open(os.path.join(os.path.expanduser(config_path),'iSpindle_config.ini')) as f:
@@ -208,7 +208,8 @@ HOST = get_config_from_sql('GENERAL', 'HOST', 'GLOBAL')  # Allowed IP range. Lea
 
 # CSV
 CSV = int(get_config_from_sql('CSV', 'ENABLE_CSV'))  # Set to 1 if you want CSV (text file) output
-OUTPATH = get_config_from_sql('CSV', 'OUTPATH','GLOBAL')  # CSV output file path; filename will be name_id.csv
+#OUTPATH = get_config_from_sql('CSV', 'OUTPATH','GLOBAL')  # CSV output file path; filename will be name_id.csv
+OUTPATH = config.get('CSV', 'CSV_FILE_LOCATION') # BME : retrieve output file path from config file instead of db
 DELIMITER = get_config_from_sql('CSV', 'DELIMITER','GLOBAL')  # CSV delimiter (normally use ; for Excel)
 NEWLINE =  get_config_from_sql('CSV', 'NEWLINE','GLOBAL')  # newline (\r\n for windows clients)
 DATETIME = int(get_config_from_sql('CSV', 'DATETIME','GLOBAL'))  # Leave this at 1 to include Excel compatible timestamp in CSV
@@ -460,7 +461,8 @@ def handler(clientsock, addr):
 
         # CSV
         CSV = int(get_config_from_sql('CSV', 'ENABLE_CSV', spindle_name))  # Set to 1 if you want CSV (text file) output
-        OUTPATH = get_config_from_sql('CSV', 'OUTPATH', 'GLOBAL')  # CSV output file path; filename will be name_id.csv
+        #OUTPATH = get_config_from_sql('CSV', 'OUTPATH', 'GLOBAL')  # CSV output file path; filename will be name_id.csv
+        OUTPATH = config.get('CSV', 'CSV_FILE_LOCATION') # BME : retrieve output file path from config file instead of db
         DELIMITER = get_config_from_sql('CSV', 'DELIMITER', 'GLOBAL')  # CSV delimiter (normally use ; for Excel)
         NEWLINE = get_config_from_sql('CSV', 'NEWLINE', 'GLOBAL')  # newline (\r\n for windows clients)
         DATETIME = int(

@@ -65,7 +65,7 @@ INSERT INTO `Settings` (`Section`, `Parameter`, `value`, `DEFAULT_value`, `Descr
 ('CSV', 'DELIMITER', ';', ';', 'Trennzeichen, dass fuer CSV File genutzt wird', 'Delimiter used for CSV file', 'Separatore usato nel file CSV', 'GLOBAL'),
 ('CSV', 'ENABLE_CSV', '1', '0', 'Schreiben der Daten in CSV File (1: ja 0: nein)', 'Write Data to CSV file (1: yes 0: no)', 'Scrivere dati in un file CSV (1: si 0: no) ', '_DEFAULT'),
 ('CSV', 'NEWLINE', '\n', '\\r\\n', 'Zeichen fuer Zeilenumbruch', 'Newline characters', 'Caratteri Newline', 'GLOBAL'),
-('CSV', 'OUTPATH', '../', '/home/pi/iSpindle-srv/csv/', 'Pfad zum schreiben des CSV files. Der filename lautet dann name_id.csv', 'CSV output file path; filename will be name_id.csv', 'Percorso file per CSV; il nome del file sarà name_id.csv', '_DEFAULT'),
+('CSV', 'OUTPATH', '../csv_result/', '/home/pi/iSpindle-srv/csv/', 'Pfad zum schreiben des CSV files. Der filename lautet dann name_id.csv', 'CSV output file path; filename will be name_id.csv', 'Percorso file per CSV; il nome del file sarà name_id.csv', '_DEFAULT'),
 ('DIAGRAM', 'ALCOHOL_Y_AXIS_MAX', '20', '20', 'Max Wert für y-Achse des Alkohol Diagrams', 'Max value for y-axis of the alcohol diagram', '', 'GLOBAL'),
 ('DIAGRAM', 'ALCOHOL_Y_AXIS_MIN', '0', '0', 'Min Wert für y-Achse des Alkohol Diagrams', 'Min value for y-axis of the alcohol diagram', '', 'GLOBAL'),
 ('DIAGRAM', 'ANGLE_Y_AXIS_MAX', '75', '75', 'Max Wert für y-Achse des Winkel Diagrams', 'Max value for y-axis of the angle diagram', '', 'GLOBAL'),
