@@ -93,15 +93,14 @@ from gspread_formatting import *
 # So there shouldn't be anything here for you to adjust anymore.
 
 config = configparser.ConfigParser()
-#config_path = './config/'
-config_path = 'C:/Users/Benjamin/Desktop/python/Repos/iSpindel-TCP-Server/config/'
+config_path = './config/'
 
 try:
   with open(os.path.join(os.path.expanduser(config_path),'iSpindle_config.ini')) as f:
     config.read_file(f)
 except IOError:
     config.read_file(os.path.join(os.path.expanduser(config_path),'iSpindle_default.ini'))
-  
+
 
 # General
 DEBUG = config.get('GENERAL', 'DEBUG') # Set to 1 to enable debug output on console (usually devs only)
